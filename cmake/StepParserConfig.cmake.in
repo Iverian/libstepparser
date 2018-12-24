@@ -1,0 +1,14 @@
+
+get_filename_component(StepParser_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+include(CMakeFindDependencyMacro)
+
+list(APPEND CMAKE_MODULE_PATH ${StepParser_CMAKE_DIR})
+
+find_package(OpenMP)
+list(REMOVE_AT CMAKE_MODULE_PATH -1)
+
+if(NOT TARGET StepParser::StepParser)
+    include("${StepParser_CMAKE_DIR}/StepParserTargets.cmake")
+endif()
+
+set(StepParser_LIBRARIES StepParser::GeomModel)
