@@ -1,5 +1,5 @@
-#ifndef GEOM_MODEL_SRC_UTIL_DEBUG_H_
-#define GEOM_MODEL_SRC_UTIL_DEBUG_H_
+#ifndef STEPPARSE_SRC_UTIL_DEBUG_HPP_
+#define STEPPARSE_SRC_UTIL_DEBUG_HPP_
 
 #include <exception>
 #include <iostream>
@@ -81,4 +81,4 @@ protected:
             THROW(exc_name, __VA_ARGS__);                                     \
     } while (0)
 
-#endif // GEOM_MODEL_SRC_UTIL_DEBUG_H_
+#endif // STEPPARSE_SRC_UTIL_DEBUG_HPP_

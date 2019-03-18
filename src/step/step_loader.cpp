@@ -1,6 +1,6 @@
-#include "step_loader.h"
-#include "step_entities.h"
-#include "step_tokenizer.h"
+#include "step_loader.hpp"
+#include "step_entities.hpp"
+#include "step_tokenizer.hpp"
 
 #include <iterator>
 #include <sstream>
@@ -35,7 +35,10 @@ StepString StepLoader::readline()
     return StepString(result);
 }
 
-const map<size_t, string>& StepLoader::data() const { return data_; }
+const map<size_t, string>& StepLoader::data() const
+{
+    return data_;
+}
 
 StepString::StepString(size_t id, const string& str)
     : string(str)
@@ -66,7 +69,10 @@ StepString& StepString::cut()
     return (*this = StepString(id, str.substr(i)));
 }
 
-size_t StepString::id() const { return id_; }
+size_t StepString::id() const
+{
+    return id_;
+}
 
 string StepString::entity_name()
 {

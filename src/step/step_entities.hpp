@@ -1,5 +1,5 @@
-#ifndef HEXMESH_SRC_STEP_STEP_ENTITIES_H_
-#define HEXMESH_SRC_STEP_STEP_ENTITIES_H_
+#ifndef STEPPARSE_SRC_STEP_STEP_ENTITIES_HPP_
+#define STEPPARSE_SRC_STEP_STEP_ENTITIES_HPP_
 
 #include <map>
 #include <optional>
@@ -14,7 +14,6 @@ enum class StepCurve {
     ELLIPSE,
     HYPERBOLA,
     PARABOLA,
-    CIRCULAR_INVOLUTE,
     B_SPLINE_CURVE_WITH_KNOTS,
     RATIONAL_B_SPLINE_CURVE
 };
@@ -33,4 +32,4 @@ std::optional<StepCurve> find_curve(const std::string& str);
 std::optional<StepSurface> find_surface(const std::string& str);
 bool is_whitelisted(const std::string& str);
 
-#endif // HEXMESH_SRC_STEP_STEP_ENTITIES_H_
+#endif // STEPPARSE_SRC_STEP_STEP_ENTITIES_HPP_

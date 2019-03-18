@@ -1,141 +1,154 @@
-cmake_minimum_required(VERSION 3.0)
-project(libstepparser VERSION 1.0.0 LANGUAGES CXX)
+cmake_minimum_required(VERSION 3.12)
+project(libstepparser VERSION 2.0.0 LANGUAGES CXX)
 
-###################################################################################################
-# Include additional cmake packages
+option(ENABLE_TESTS "Enable unit tests" YES)
+
+if(EXTRA_CXX_FLAGS)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EXTRA_CXX_FLAGS}")
+  message(STATUS "Added extra c++ compiler flags ${EXTRA_CXX_FLAGS}")
+endif()
+
+# Include additional CMake packages
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
-###################################################################################################
+#
 
-set(CMAKE_CXX_STANDARD 17)
-list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake)
+list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_SOURCE_DIR}/cmake")
 
-###################################################################################################
-# Configure conan
-if(NOT EXISTS ${CMAKE_BINARY_DIR}/conan.cmake)
-    message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
-    file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/master/conan.cmake"
-                  "${CMAKE_BINARY_DIR}/conan.cmake")
-endif()
-
-include(${CMAKE_BINARY_DIR}/conan.cmake)
-
-conan_cmake_run(
-    REQUIRES gtest/1.8.1@bincrafters/stable
-             fmt/5.2.1@bincrafters/stable
-    BASIC_SETUP CMAKE_TARGETS
-    BUILD missing
-)
-###################################################################################################
-
-###################################################################################################
-# Declare dependencies
+# Configure dependencies
+find_package(fmt CONFIG REQUIRED)
 find_package(GeomModel REQUIRED)
-###################################################################################################
+#
 
-###################################################################################################
 # Find source files
-file(GLOB MAIN_HEADERS "include/step_parser.h")
+set(PROJECT_TARGET StepParse)
+set(PROJECT_SHORT_NAME stp)
+string(TOUPPER ${PROJECT_TARGET} PROJECT_TARGET_UPPER)
+string(TOUPPER ${PROJECT_SHORT_NAME} PROJECT_SHORT_NAME_UPPER)
 
-set(MAIN_SOURCES "")
-file(GLOB _SRC_CHILDREN "src/*")
+file(GLOB_RECURSE
+  PROJECT_SOURCES
+  CONFIGURE_DEPENDS
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp"
+)
+file(GLOB_RECURSE
+  PROJECT_PUBLIC_HEADERS
+  CONFIGURE_DEPENDS
+  "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp"
+  "${CMAKE_CURRENT_BINARY_DIR}/exports.hpp"
+ )
+#
 
-foreach(_CHILD ${_SRC_CHILDREN})
-    if(IS_DIRECTORY ${_CHILD})
-        file(GLOB _CHILD_HEADERS "${_CHILD}/*.h")
-	    file(GLOB _CHILD_SOURCES "${_CHILD}/*.cpp")
-        list(APPEND MAIN_SOURCES ${_CHILD_HEADERS})
-        list(APPEND MAIN_SOURCES ${_CHILD_SOURCES})
-	endif()
-endforeach()
-###################################################################################################
-
-###################################################################################################
 # Create target and set properties
-if(WIN32)
-    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+add_library(${PROJECT_TARGET} SHARED)
+
+target_sources(${PROJECT_TARGET}
+  PRIVATE
+    ${PROJECT_SOURCES}
+    ${PROJECT_PUBLIC_HEADERS}
+)
+target_include_directories(${PROJECT_TARGET}
+  PUBLIC
+    "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
+  PRIVATE
+    "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR};${PROJECT_SOURCE_DIR}/src>"
+)
+target_compile_features(${PROJECT_TARGET}
+  PUBLIC
+    cxx_std_17
+)
+target_compile_definitions(${PROJECT_TARGET}
+  PUBLIC
+    $<BUILD_INTERFACE:_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS>
+)
+target_link_libraries(${PROJECT_TARGET}
+  PRIVATE
+    fmt::fmt
+  PUBLIC
+    GeomModel::GeomModel
+)
+set_target_properties(${PROJECT_TARGET}
+  PROPERTIES
+    DEBUG_POSTFIX d
+    CXX_EXTENSIONS NO
+    WINDOWS_EXPORT_ALL_SYMBOLS ${ENABLE_TESTS}
+)
+
+include(GenerateExportHeader)
+generate_export_header(${PROJECT_TARGET}
+  BASE_NAME "${PROJECT_SHORT_NAME_UPPER}"
+  EXPORT_FILE_NAME "exports.hpp"
+  NO_DEPRECATED_MACRO_NAME "${PROJECT_SHORT_NAME_UPPER}_OMIT_DEPRECATED"
+  INCLUDE_GUARD_NAME
+    "${PROJECT_NAME_UPPER}_INCLUDE_${PROJECT_SHORT_NAME_UPPER}_EXPORTS_HPP_"
+  DEFINE_NO_DEPRECATED
+)
+if (ENABLE_TESTS)
+  target_compile_definitions(${PROJECT_TARGET}
+    PUBLIC
+      "${PROJECT_SHORT_NAME_UPPER}_STATIC_DEFINE"
+  )
 endif()
 
-add_library(step_parser SHARED ${MAIN_HEADERS} ${MAIN_SOURCES})
+add_library(${PROJECT_TARGET}::${PROJECT_TARGET} ALIAS ${PROJECT_TARGET})
+#
 
-target_include_directories(step_parser
-    PUBLIC
-        $<INSTALL_INTERFACE:${CMAKE_INSTALL_FULL_INCLUDEDIR}>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    PRIVATE
-        ${CONAN_INCLUDE_DIRS_FMT}
-        "src"
+install(TARGETS ${PROJECT_TARGET}
+  EXPORT ${PROJECT_TARGET}_targets
+  RUNTIME
+    DESTINATION "${CMAKE_INSTALL_BINDIR}"
+  LIBRARY
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+  ARCHIVE
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+  INCLUDES
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
 )
-
-target_link_libraries(step_parser
-    PUBLIC
-        GeomModel::GeomModel
-    PRIVATE
-        CONAN_PKG::fmt
-)
-###################################################################################################
-
-###################################################################################################
-# Install package
-set(INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/cmake/step_parser)
-
-install(TARGETS step_parser
-    EXPORT step_parser-targets
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-)
-
-set_target_properties(step_parser PROPERTIES EXPORT_NAME StepParser)
-
 install(
-    DIRECTORY include/
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+  DIRECTORY "${PROJECT_SOURCE_DIR}/include/"
+  DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+)
+install(
+  FILES "${PROJECT_BINARY_DIR}/exports.hpp"
+  DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_SHORT_NAME}"
 )
 
-install(
-    EXPORT step_parser-targets
-    FILE StepParserTargets.cmake
-    NAMESPACE StepParser::
-    DESTINATION ${INSTALL_CONFIGDIR}
+set(INSTALL_CONFIGDIR "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_TARGET}")
+install(EXPORT ${PROJECT_TARGET}_targets
+  DESTINATION "${INSTALL_CONFIGDIR}"
+  NAMESPACE "${PROJECT_TARGET}::"
+  FILE "${PROJECT_TARGET}Targets.cmake"
 )
-
-install(
-    FILES $<TARGET_PDB_FILE:step_parser>
-    DESTINATION ${CMAKE_INSTALL_BINDIR}
+if (WIN32)
+  install(
+    FILES "$<TARGET_PDB_FILE:${PROJECT_TARGET}>"
+    DESTINATION "${CMAKE_INSTALL_BINDIR}"
     OPTIONAL
-)
+  )
+endif()
 
 write_basic_package_version_file(
-    ${CMAKE_CURRENT_BINARY_DIR}/StepParserConfigVersion.cmake
-    VERSION ${PROJECT_VERSION}
-    COMPATIBILITY AnyNewerVersion
+  "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_TARGET}ConfigVersion.cmake"
+  VERSION ${PROJECT_VERSION}
+  COMPATIBILITY AnyNewerVersion
 )
-
 configure_package_config_file(
-    ${CMAKE_CURRENT_LIST_DIR}/cmake/StepParserConfig.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/StepParserConfig.cmake
-    INSTALL_DESTINATION ${INSTALL_CONFIGDIR}
+  "${CMAKE_CURRENT_LIST_DIR}/cmake/${PROJECT_TARGET}Config.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_TARGET}Config.cmake"
+  INSTALL_DESTINATION "${INSTALL_CONFIGDIR}"
 )
 
-#Install the config, configversion and custom find modules
-install(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/StepParserConfig.cmake
-    ${CMAKE_CURRENT_BINARY_DIR}/StepParserConfigVersion.cmake
-    DESTINATION ${INSTALL_CONFIGDIR}
+# Install the config, configversion and custom find modules
+install(
+  FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_TARGET}Config.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_TARGET}ConfigVersion.cmake"
+  DESTINATION "${INSTALL_CONFIGDIR}"
 )
-###################################################################################################
+#
 
-export(
-    EXPORT step_parser-targets
-    FILE ${CMAKE_CURRENT_BINARY_DIR}/StepParserTargets.cmake
-    NAMESPACE StepParser::
-)
-
-#Register package in user's package registry
-export(PACKAGE StepParser)
-
-###################################################################################################
 # Add tests
-add_subdirectory(test)
-###################################################################################################
+if (ENABLE_TESTS)
+  add_subdirectory(tests)
+endif()
+#

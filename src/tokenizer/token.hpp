@@ -1,5 +1,5 @@
-#ifndef HEXMESH_SRC_TOKENIZER_TOKEN_H_
-#define HEXMESH_SRC_TOKENIZER_TOKEN_H_
+#ifndef STEPPARSE_SRC_TOKENIZER_TOKEN_HPP_
+#define STEPPARSE_SRC_TOKENIZER_TOKEN_HPP_
 
 #include <string>
 #include <variant>

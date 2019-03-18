@@ -1,0 +1,15 @@
+
+get_filename_component(StepParse_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+include(CMakeFindDependencyMacro)
+
+list(APPEND CMAKE_MODULE_PATH ${StepParse_CMAKE_DIR})
+
+find_package(GeomModel REQUIRED)
+
+list(REMOVE_AT CMAKE_MODULE_PATH -1)
+
+if(NOT TARGET StepParse::StepParse)
+    include("${StepParse_CMAKE_DIR}/StepParseTargets.cmake")
+endif()
+
+set(StepParser_LIBRARIES StepParse::StepParse)

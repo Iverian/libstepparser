@@ -1,7 +1,7 @@
-#ifndef HEXMESH_SRC_TOKENIZER_TOKENIZER_H_
-#define HEXMESH_SRC_TOKENIZER_TOKENIZER_H_
+#ifndef STEPPARSE_SRC_TOKENIZER_TOKENIZER_HPP_
+#define STEPPARSE_SRC_TOKENIZER_TOKENIZER_HPP_
 
-#include "token.h"
+#include "token.hpp"
 
 #include <memory>
 #include <sstream>
@@ -14,7 +14,8 @@ struct Tokenizer {
     Tokenizer& operator=(Tokenizer&& other) = default;
 
     Tokenizer();
-    Tokenizer(std::istream* is, const std::string& delim, const std::string& lit);
+    Tokenizer(std::istream* is, const std::string& delim,
+              const std::string& lit);
 
     Tokenizer& operator++();
     const Tokenizer operator++(int);

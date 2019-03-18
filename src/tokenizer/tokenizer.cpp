@@ -1,4 +1,4 @@
-#include "tokenizer.h"
+#include "tokenizer.hpp"
 
 #include <stdexcept>
 
@@ -76,7 +76,10 @@ string Tokenizer::get_word()
     return result;
 }
 
-bool Tokenizer::is_word(char c) const { return isalnum(c) || c == '_'; }
+bool Tokenizer::is_word(char c) const
+{
+    return isalnum(c) || c == '_';
+}
 
 bool Tokenizer::is_delim(char c) const
 {
@@ -90,8 +93,9 @@ bool Tokenizer::is_lit(char c) const
 
 istream& Tokenizer::is() const
 {
-    if (!is_) throw runtime_error(
-        "Null pointer exception: tokenizer input stream is not set");
+    if (!is_)
+        throw runtime_error(
+            "Null pointer exception: tokenizer input stream is not set");
     return *is_;
 }
 
@@ -101,9 +105,15 @@ bool Tokenizer::eof() const
     return result;
 }
 
-const Token& Tokenizer::operator*() const { return token_; }
+const Token& Tokenizer::operator*() const
+{
+    return token_;
+}
 
-const Token* Tokenizer::operator->() const { return &token_; }
+const Token* Tokenizer::operator->() const
+{
+    return &token_;
+}
 
 bool Tokenizer::operator==(const Tokenizer& other) const
 {
@@ -115,9 +125,15 @@ bool Tokenizer::operator!=(const Tokenizer& other) const
     return !(*this == other);
 }
 
-Tokenizer& Tokenizer::next() { return ++(*this); }
+Tokenizer& Tokenizer::next()
+{
+    return ++(*this);
+}
 
-string Tokenizer::get() { return token_.raw(); }
+string Tokenizer::get()
+{
+    return token_.raw();
+}
 
 Tokenizer& Tokenizer::set_istream(istream& is)
 {

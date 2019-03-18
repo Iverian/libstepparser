@@ -1,5 +1,5 @@
-#ifndef GEOM_MODEL_SRC_UTIL_TO_STRING_H_
-#define GEOM_MODEL_SRC_UTIL_TO_STRING_H_
+#ifndef STEPPARSE_SRC_UTIL_TO_STRING_HPP_
+#define STEPPARSE_SRC_UTIL_TO_STRING_HPP_
 
 #include <sstream>
 #include <string>
@@ -28,4 +28,4 @@ string to_string(const T& t)
     return ss.str();
 }
 
-#endif // GEOM_MODEL_SRC_UTIL_TO_STRING_H_
+#endif // STEPPARSE_SRC_UTIL_TO_STRING_HPP_

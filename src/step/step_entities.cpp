@@ -1,4 +1,4 @@
-#include "step_entities.h"
+#include "step_entities.hpp"
 
 #include <map>
 #include <set>
@@ -7,7 +7,7 @@ using namespace std;
 
 optional<StepCurve> find_curve(const string& str)
 {
-    static const map<string, StepCurve> curves{
+    static const map<string, StepCurve> curves {
         {"LINE", StepCurve::LINE},
         {"CIRCLE", StepCurve::CIRCLE},
         {"ELLIPSE", StepCurve::ELLIPSE},
@@ -16,12 +16,12 @@ optional<StepCurve> find_curve(const string& str)
         {"B_SPLINE_CURVE_WITH_KNOTS", StepCurve::B_SPLINE_CURVE_WITH_KNOTS},
         {"(", StepCurve::RATIONAL_B_SPLINE_CURVE}};
     auto it = curves.find(str);
-    return it != curves.cend() ? optional<StepCurve>{it->second} : nullopt;
+    return it != curves.cend() ? optional<StepCurve> {it->second} : nullopt;
 }
 
 optional<StepSurface> find_surface(const string& str)
 {
-    static const map<string, StepSurface> surfaces{
+    static const map<string, StepSurface> surfaces {
         {"PLANE", StepSurface::PLANE},
         {"CYLINDRICAL_SURFACE", StepSurface::CYLINDRICAL_SURFACE},
         {"CONICAL_SURFACE", StepSurface::CONICAL_SURFACE},
@@ -31,7 +31,8 @@ optional<StepSurface> find_surface(const string& str)
          StepSurface::B_SPLINE_SURFACE_WITH_KNOTS},
         {"(", StepSurface::RATIONAL_B_SPLINE_SURFACE}};
     auto it = surfaces.find(str);
-    return it != surfaces.cend() ? optional<StepSurface>{it->second} : nullopt;
+    return it != surfaces.cend() ? optional<StepSurface> {it->second}
+                                 : nullopt;
 }
 
 bool is_whitelisted(const string& str)

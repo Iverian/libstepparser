@@ -1,31 +1,33 @@
-#include "token.h"
+#include "token.hpp"
 
 using namespace std;
 
 Token::Token(const Token::Id& i)
-        :id_(i)
+    : id_(i)
 {
-    if (i==Id::NUMBER) {
+    if (i == Id::NUMBER) {
         data_ = 0.;
-    }
-    else {
+    } else {
         data_ = string();
     }
 }
 
 Token::Token(const string& str)
-        :id_(Id::STR)
+    : id_(Id::STR)
 {
     data_ = str;
 }
 
 Token::Token(double num)
-        :id_(Id::NUMBER)
+    : id_(Id::NUMBER)
 {
     data_ = num;
 }
 
-bool Token::empty() const { return id_==Id::NIL; }
+bool Token::empty() const
+{
+    return id_ == Id::NIL;
+}
 
 Token& Token::clear()
 {
@@ -34,7 +36,10 @@ Token& Token::clear()
     return *this;
 }
 
-Token::Id Token::get_id() const { return id_; }
+Token::Id Token::get_id() const
+{
+    return id_;
+}
 
 string Token::to_str() const
 {
@@ -68,4 +73,7 @@ string Token::raw() const
     return result;
 }
 
-ostream& operator<<(ostream& os, const Token& x) { return os << x.raw(); }
+ostream& operator<<(ostream& os, const Token& x)
+{
+    return os << x.raw();
+}

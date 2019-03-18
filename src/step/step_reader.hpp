@@ -1,11 +1,10 @@
-#ifndef HEXMESH_SRC_STEP_STEP_READER_H_
-#define HEXMESH_SRC_STEP_STEP_READER_H_
+#ifndef STEPPARSE_SRC_STEP_STEP_READER_HPP_
+#define STEPPARSE_SRC_STEP_STEP_READER_HPP_
 
-#include <geom_model/vec.h>
+#include <gm/vec.hpp>
+#include <util/debug.hpp>
 
-#include <util/debug.h>
-
-#include "step_tokenizer.h"
+#include "step_tokenizer.hpp"
 
 #include <string>
 #include <tuple>
@@ -30,7 +29,10 @@ struct StepReader {
 
 template <class T>
 struct StepReader<T> {
-    static typename result_type<T>::type exec(Tokenizer& tok) { return std::make_tuple(typename T::value_t()); }
+    static typename result_type<T>::type exec(Tokenizer& tok)
+    {
+        return std::make_tuple(typename T::value_t());
+    }
 };
 
 template <class T, class... Args>
@@ -39,12 +41,14 @@ typename result_type<T, Args...>::type step_read(Tokenizer& tok, size_t id = 0)
     try {
         return StepReader<T, Args...>::exec(tok);
     } catch (const err::unexpected_symbol& ex) {
-        THROW(err::unexpected_symbol, std::string(ex.what()) + " at id = #" + std::to_string(id));
+        THROW(err::unexpected_symbol,
+              std::string(ex.what()) + " at id = #" + std::to_string(id));
     }
 }
 
 template <class T, class... Args>
-typename result_type<T, Args...>::type step_read(const std::string& str, size_t id = 0)
+typename result_type<T, Args...>::type step_read(const std::string& str,
+                                                 size_t id = 0)
 {
     StepTokenizer tok(str);
     return step_read<T, Args...>(tok, id);
@@ -71,7 +75,7 @@ struct float_ {
     using tuple_t = std::tuple<value_t>;
 };
 struct vec_ {
-    using value_t = Vec;
+    using value_t = gm::Vec;
     using tuple_t = std::tuple<value_t>;
 };
 template <class T>
@@ -93,7 +97,10 @@ using rlist_ = list_<ref_>;
 
 template <>
 struct StepReader<str_> {
-    static typename result_type<str_>::type exec(Tokenizer& tok) { return std::make_tuple((++tok)->to_str()); }
+    static typename result_type<str_>::type exec(Tokenizer& tok)
+    {
+        return std::make_tuple((++tok)->to_str());
+    }
 };
 
 template <>
@@ -117,24 +124,30 @@ struct StepReader<int_> {
 
 template <>
 struct StepReader<bool_> {
-    static typename result_type<bool_>::type exec(Tokenizer& tok) { return std::make_tuple((++tok)->raw() == ".T."); }
+    static typename result_type<bool_>::type exec(Tokenizer& tok)
+    {
+        return std::make_tuple((++tok)->raw() == ".T.");
+    }
 };
 
 template <>
 struct StepReader<float_> {
-    static typename result_type<float_>::type exec(Tokenizer& tok) { return std::make_tuple((++tok)->to_number()); }
+    static typename result_type<float_>::type exec(Tokenizer& tok)
+    {
+        return std::make_tuple((++tok)->to_number());
+    }
 };
 
 template <>
 struct StepReader<vec_> {
     static typename result_type<vec_>::type exec(Tokenizer& tok)
     {
-        std::array<double, 3> result{};
+        std::array<double, 3> result {};
         CHECK_IF((++tok)->raw().front() != '(', err::unexpected_symbol);
         for (size_t i = 0; i < 3; ++i)
             result[i] = (++tok)->to_number();
         CHECK_IF((++tok)->raw().front() != ')', err::unexpected_symbol);
-        return std::make_tuple(Vec(result));
+        return std::make_tuple(gm::Vec(result));
     }
 };
 
@@ -202,4 +215,4 @@ struct StepReader<i_<T, Args...>> {
     }
 };
 
-#endif // HEXMESH_SRC_STEP_STEP_READER_H_
+#endif // STEPPARSE_SRC_STEP_STEP_READER_HPP_

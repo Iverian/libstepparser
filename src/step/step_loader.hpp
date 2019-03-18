@@ -1,5 +1,5 @@
-#ifndef HEXMESH_SRC_STEP_STEP_LOADER_H_
-#define HEXMESH_SRC_STEP_STEP_LOADER_H_
+#ifndef STEPPARSE_SRC_STEP_STEP_LOADER_HPP_
+#define STEPPARSE_SRC_STEP_STEP_LOADER_HPP_
 
 #include <istream>
 #include <map>
@@ -42,4 +42,4 @@ private:
     data_t data_;
 };
 
-#endif // HEXMESH_SRC_STEP_STEP_LOADER_H_
+#endif // STEPPARSE_SRC_STEP_STEP_LOADER_HPP_
