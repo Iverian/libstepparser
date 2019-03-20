@@ -377,16 +377,3 @@ vector<gm::Shell> StepParser::geom() const
 {
     return geom_;
 }
-
-vector<gm::Shell> step_parse(istream& is)
-{
-    StepLoader load(is);
-    StepParser parse(load);
-    return parse.parse().geom();
-}
-
-vector<gm::Shell> step_parse(const string& str)
-{
-    fstream is(str, ios_base::in);
-    return step_parse(is);
-}

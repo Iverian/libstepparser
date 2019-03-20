@@ -9,7 +9,9 @@
 #include <string>
 #include <vector>
 
-STP_EXPORT std::vector<gm::Shell> step_parse(const std::string& str);
-STP_EXPORT std::vector<gm::Shell> step_parse(std::istream& is);
+namespace stp {
+STP_EXPORT std::vector<gm::Shell> parse(const std::string& str);
+STP_EXPORT std::vector<gm::Shell> parse(std::istream& is);
+} // namespace stp
 
 #endif // STEPPARSE_INCLUDE_STP_STEP_PARSE_HPP_
