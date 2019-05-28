@@ -1,6 +1,7 @@
 #ifndef STEPPARSE_SRC_STEP_STEPPARSE_HPP_
 #define STEPPARSE_SRC_STEP_STEPPARSE_HPP_
 
+#include <cmms/logging.hpp>
 #include <gm/face.hpp>
 #include <gm/oriented_edge.hpp>
 #include <gm/shell.hpp>
@@ -17,6 +18,8 @@ EXCEPT(bspline_vertex_not_match, "")
 
 class StepParser {
 public:
+    static constexpr auto logger_id = "step_parse";
+
     using id_list_t = std::vector<size_t>;
 
     explicit StepParser(const StepLoader& data);
@@ -50,6 +53,7 @@ private:
 
     const StepLoader::data_t& data_;
     std::vector<gm::Shell> geom_;
+    cmms::Logger log_;
 
     mutable std::map<size_t, gm::Edge> edge_;
     mutable std::map<size_t, std::shared_ptr<gm::AbstractCurve>> curve_;

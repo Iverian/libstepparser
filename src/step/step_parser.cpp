@@ -1,12 +1,15 @@
 #include <gm/curves.hpp>
 #include <gm/oriented_edge.hpp>
 #include <gm/surfaces.hpp>
-
 #include <util/debug.hpp>
 #include <util/to_string.hpp>
 
+#include "spdlog\common.h"
 #include "step_parser.hpp"
 #include "step_reader.hpp"
+
+#include <cmms/logging.hpp>
+#include <spdlog/spdlog.h>
 
 #include <fstream>
 #include <iostream>
@@ -20,15 +23,14 @@ StepParser& StepParser::parse()
 
     geom_.resize(size);
     for (size_t i = 0; i < size; ++i) {
-        cdbg << "shell: " << i + 1 << "/" << size << ": " << endl;
-
         auto face_list = get_faces(shell_list[i].first);
         auto fsize = face_list.size();
         vector<gm::Face> faces;
 
+        log_->debug("parsing {} / {} shell with {} faces", i + 1, size, fsize);
         geom_[i].set_ax(shell_list[i].second);
         for (size_t j = 0; j < fsize; ++j) {
-            cdbg << ">  " << j + 1 << "/" << fsize << endl;
+            log_->debug("parsing {} / {} face", j + 1, fsize);
 
             faces.emplace_back(get_face(face_list[j]));
         }
@@ -252,6 +254,8 @@ shared_ptr<gm::AbstractCurve> StepParser::get_curve(size_t id) const
         }
     }
     CHECK_IF(!result, err::null_pointer, "returning null curve");
+
+    log_->debug("processed curve: {}", *result);
     return result;
 }
 
@@ -354,6 +358,8 @@ shared_ptr<gm::AbstractSurface> StepParser::get_surface(size_t id) const
         }
     }
     CHECK_IF(!result, err::null_pointer, "returning null surface");
+
+    log_->debug("processed surface: {}", *result);
     return result;
 }
 
@@ -367,6 +373,7 @@ const string& StepParser::at(size_t id) const
 StepParser::StepParser(const StepLoader& data)
     : data_(data.data())
     , geom_()
+    , log_(cmms::setup_logger(logger_id))
     , edge_()
     , curve_()
     , surface_()

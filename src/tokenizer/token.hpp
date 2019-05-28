@@ -1,6 +1,7 @@
 #ifndef STEPPARSE_SRC_TOKENIZER_TOKEN_HPP_
 #define STEPPARSE_SRC_TOKENIZER_TOKEN_HPP_
 
+#include <ostream>
 #include <string>
 #include <variant>
 
