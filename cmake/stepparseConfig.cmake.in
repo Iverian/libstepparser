@@ -1,0 +1,16 @@
+
+get_filename_component(stepparse_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+include(CMakeFindDependencyMacro)
+
+list(APPEND CMAKE_MODULE_PATH ${stepparse_CMAKE_DIR})
+
+find_package(commons CONFIG REQUIRED)
+find_package(geommodel CONFIG REQUIRED)
+
+list(REMOVE_AT CMAKE_MODULE_PATH -1)
+
+if(NOT TARGET stepparse::stepparse)
+    include("${stepparse_CMAKE_DIR}/stepparseTargets.cmake")
+endif()
+
+set(stepparser_LIBRARIES stepparse::stepparse)
