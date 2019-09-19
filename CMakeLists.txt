@@ -1,4 +1,10 @@
 cmake_minimum_required(VERSION 3.10)
+
+set(PROJECT_TARGET stepparse)
+set(PROJECT_SHORT_NAME stp)
+string(TOUPPER ${PROJECT_TARGET} PROJECT_TARGET_UPPER)
+string(TOUPPER ${PROJECT_SHORT_NAME} PROJECT_SHORT_NAME_UPPER)
+
 project(libstepparser VERSION 2.0.0 LANGUAGES CXX)
 
 option(STP_ENABLE_TESTS "Enable unit tests" YES)
@@ -12,16 +18,11 @@ list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_SOURCE_DIR}/cmake")
 
 # Configure dependencies
 find_package(fmt CONFIG REQUIRED)
-find_package(Commons CONFIG REQUIRED)
-find_package(GeomModel CONFIG REQUIRED)
+find_package(commons CONFIG REQUIRED)
+find_package(geommodel CONFIG REQUIRED)
 #
 
 # Find source files
-set(PROJECT_TARGET StepParse)
-set(PROJECT_SHORT_NAME stp)
-string(TOUPPER ${PROJECT_TARGET} PROJECT_TARGET_UPPER)
-string(TOUPPER ${PROJECT_SHORT_NAME} PROJECT_SHORT_NAME_UPPER)
-
 file(GLOB_RECURSE
   PROJECT_SOURCES
   CONFIGURE_DEPENDS
@@ -60,9 +61,9 @@ target_compile_definitions(${PROJECT_TARGET}
 )
 target_link_libraries(${PROJECT_TARGET}
   PRIVATE
-    Commons::Commons
+    commons::commons
   PUBLIC
-    GeomModel::GeomModel
+    geommodel::geommodel
 )
 set_target_properties(${PROJECT_TARGET}
   PROPERTIES

@@ -21,7 +21,7 @@ if (ALLTESTS_SOURCES)
   )
   target_link_libraries(alltests
     PRIVATE
-      StepParse::StepParse
+      stepparse::stepparse
       fmt::fmt
       GTest::GTest
       GTest::Main

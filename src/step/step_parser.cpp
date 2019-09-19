@@ -4,10 +4,10 @@
 #include <util/debug.hpp>
 #include <util/to_string.hpp>
 
-#include "spdlog\common.h"
 #include "step_parser.hpp"
 #include "step_reader.hpp"
 
+#include <spdlog/common.h>
 #include <cmms/logging.hpp>
 #include <spdlog/spdlog.h>
 
