@@ -4,6 +4,7 @@ include(CMakeFindDependencyMacro)
 
 list(APPEND CMAKE_MODULE_PATH ${stepparse_CMAKE_DIR})
 
+find_package(fmt CONFIG REQUIRED)
 find_package(commons CONFIG REQUIRED)
 find_package(geommodel CONFIG REQUIRED)
 
